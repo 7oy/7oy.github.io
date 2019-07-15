@@ -87,8 +87,8 @@ show_wait(i){//показывает/скрывает экран ожидания
 	else if(i==0) this.show.classList.remove('show');
 },
 show_result(link){//выводит ссылку для сообщения
-	//const actual=window.location.origin+'/'+link;
-/**/const actual='file:///'+window.location.pathname.substr(1,window.location.pathname.length)+'?'+link;//для ДОМА
+	const actual=window.location.origin+'?'+link;
+/**///const actual='file:///'+window.location.pathname.substr(1,window.location.pathname.length)+'?'+link;//для ДОМА
 	this.show.classList.add('not');
 	this.link=$.box({array:['class','link'],node:this.body,text:actual});//контейнер для заливки
 },
