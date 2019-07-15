@@ -88,6 +88,7 @@ show_wait(i){//показывает/скрывает экран ожидания
 },
 show_result(link){//выводит ссылку для сообщения
 	const actual=window.location.origin+'?'+link;
+	actual=actual.substr(7,actual.length);
 /**///const actual='file:///'+window.location.pathname.substr(1,window.location.pathname.length)+'?'+link;//для ДОМА
 	this.show.classList.add('not');
 	this.link=$.box({array:['class','link'],node:this.body,text:actual});//контейнер для заливки
