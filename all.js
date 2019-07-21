@@ -21,6 +21,7 @@ direction_decode(text){//функция получающая сообщение 
 	.then(response =>{
 		if('result' in response){
 			this.text=this.form.textarea.value=response.result;
+			this.input_textarea();//чтобы размер подобрался под текст
 			if(text.length>5) this.click_decode();
 		}
 		else if('error' in response)throw new Error(response.error);
@@ -54,7 +55,11 @@ click_encode(){
 },
 click_decode(){//при нажатии по кнопке декодирует сообщение
 	if((this.form.text.value.length==0)||(this.text==null)) _fail.red('Необходимые данные для рассшифровки отсутсвуют!');
-	else this.form.textarea.value=this.decrypt(this.form.text.value,this.text);
+	else {
+		this.form.textarea.value=this.decrypt(this.form.text.value,this.text);
+		this.input_textarea();
+	}
+	
 },
 click_form_encode(){//обработчик клика для создания формы кодирования
 	const width=$.property(event.target).width;
@@ -74,12 +79,13 @@ form_encode(){//форма кодирования
 	$.event('a',this.form.button,'click',this.click_encode);//вешаем обработчик на кнопку для расшифровки
 },
 layout(){//макет на основе которого создается формы
-	const form=$.box({array:['class','form'],node:this.body,text:`<div class='text'><input type='text' id='text_1' placeholder=' ' data-caret><label for='text_1' data-title='Пароль'></label></div><div class='textarea'><textarea rows='4' placeholder=' ' data-caret></textarea><div data-title='Текст'></div></div><button>Действие</button>`});//контейнер для формы
+	const form=$.box({array:['class','form'],node:this.body,text:`<div class='text'><input type='text' id='text_1' placeholder=' ' data-caret><label for='text_1' data-title='Пароль'></label></div><div class='textarea'><textarea rows='1' placeholder=' ' data-caret></textarea><div data-title='Текст'></div></div><button>Действие</button>`});//контейнер для формы
 	this.form={
 		text:$.css(`input[type='text']`,form),
 		textarea:$.tag('textarea',form),
 		button:$.tag('button',form),
 	}
+	$.event('a',this.form.textarea,'input',this.input_textarea);//вешаем обработчик на textarea для авто. изменения размера
 },
 show_wait(i){//показывает/скрывает экран ожидания
 	if(this.show==null)this.show=$.box({array:[['class','fill'],['date-icon','turn']],node:this.body,text:``});//контейнер для заливки
@@ -105,19 +111,19 @@ ingot(password, length, mark=0){//функция заготовки создае
 },
 encrypt(password,text){
 	text.normalize();
-	let string='';
+	let string_16='';
 	for(let i=0;i<text.length;i++){
 		let sign=text.charCodeAt(i);
 		if(sign>65535)sign=32;//если больше то забиваем пробелом
-		string+=((sign).toString(16)).padStart(4,'0');
+		string_16+=((sign).toString(16)).padStart(4,'0');
 	};
-	let mask=this.ingot(password,string.length,1);//создаем маску на основе пароля
-	string=string.padEnd(mask.length,mask);//добиваем текст до длины маски
-	let result_string='';
+	let mask=this.ingot(password,string_16.length,1);//создаем маску на основе пароля
+	string_16=string_16.padEnd(mask.length,mask);//добиваем текст до длины маски
+	let string_mask='';
 	for(let i=0;i<mask.length;i++){//накладываем маску на текст
-		result_string+=(parseInt(mask[i],16)^parseInt(string[i],16)).toString(16);
+		string_mask+=(parseInt(mask[i],16)^parseInt(string_16[i],16)).toString(16);
 	};
-	return result_string;
+	return string_mask;
 },
 decrypt(password,text){
 	let mask=this.ingot(password,text.length);//создаем маску на основе пароля
@@ -128,12 +134,17 @@ decrypt(password,text){
 	let index=string.indexOf(mask.substr(0,10));
 	if(index==-1) return this.text;
 	string=string.substr(0,index);
-	let result_string='';
+	let string_result='';
 	for(let i=0;i<string.length;i+=4){
 		let sign=parseInt(string.substr(i,4),16);
-		result_string+=String.fromCharCode(sign);
+		string_result+=String.fromCharCode(sign);
 	};
-	return result_string;
+	return string_result;
+},
+input_textarea(){
+	const textarea=this.form.textarea;
+	textarea.style.height = 'auto';
+	textarea.style.height = (textarea.scrollHeight) + 'px';
 },
 };
 
