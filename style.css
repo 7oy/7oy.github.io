@@ -1,4 +1,4 @@
-﻿
+
 [data-noselect]{ /*Запретить выделение*/
 user-select: none;
 }
@@ -209,7 +209,7 @@ margin-top: 20px;
 
 .form>.textarea>textarea{
 resize: none;
-overflow:hidden ;
+overflow-y:hidden;
 }
 
 
@@ -251,7 +251,7 @@ color: rgba(0,0,0,.6);
 font-size: 1rem;
 }
 .form>.text>input:focus + label::after,.form>.textarea>textarea:focus + div::after{ /*Поведение пояснительной надписи при фокусе*/
-color: #2196f3
+color: #2196f3;
 }
 /**//*пароль*/
 
