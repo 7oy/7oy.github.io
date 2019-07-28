@@ -58,7 +58,6 @@ click_encode(){
 },
 event_decode(){//при нажатии по кнопке декодирует сообщение
 	if((event.type=='keyup')&&(event.keyCode!=13)) return;
-/**/console.log(1);	
 	if((this.form.text.value.length==0)||(this.text==null)) _fail.red('Необходимые данные для рассшифровки отсутсвуют!');
 	else {
 		this.form.textarea.value=this.decrypt(this.form.text.value,this.text);
