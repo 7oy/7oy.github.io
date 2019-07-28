@@ -22,7 +22,7 @@ direction_decode(text){//функция получающая сообщение 
 		if('result' in response){
 			this.text=this.form.textarea.value=response.result;
 			this.input_textarea();//чтобы размер подобрался под текст
-			if(text.length>5) this.click_decode();
+			if(text.length>5) this.event_decode();
 		}
 		else if('error' in response)throw new Error(response.error);
 		this.show_wait(0);
@@ -34,7 +34,10 @@ direction_decode(text){//функция получающая сообщение 
 	this.layout();//создаем форму
 	this.form.button.innerText='Декодировать';//обзываем кнопку
 	if(text.length>5)this.form.text.value=text.substr(5,text.length);//записываем пароль(если есть) в форму
-	$.event('a',this.form.button,'click',this.click_decode);//вешаем обработчик на кнопку для расшифровки
+	$.event(
+			['a',this.form.button,'click',this.event_decode],
+			['a',this.form.text,'keyup',this.event_decode]
+	);//вешаем обработчик на кнопку для расшифровки
 	this.show_wait(1);
 },
 click_encode(){
@@ -53,13 +56,14 @@ click_encode(){
 		});
 	};
 },
-click_decode(){//при нажатии по кнопке декодирует сообщение
+event_decode(){//при нажатии по кнопке декодирует сообщение
+	if((event.type=='keyup')&&(event.keyCode!=13)) return;
+/**/console.log(1);	
 	if((this.form.text.value.length==0)||(this.text==null)) _fail.red('Необходимые данные для рассшифровки отсутсвуют!');
 	else {
 		this.form.textarea.value=this.decrypt(this.form.text.value,this.text);
 		this.input_textarea();
-	}
-	
+	};
 },
 click_form_encode(){//обработчик клика для создания формы кодирования
 	const width=$.property(event.target).width;
