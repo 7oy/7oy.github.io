@@ -57,9 +57,10 @@ click_encode(){
 	};
 },
 event_decode(){//при нажатии по кнопке декодирует сообщение
-	if((event.type=='keyup')&&(event.code!='Enter')) return;
+	if((event.type=='keyup')&&(event.key!='Enter')) return;
 	let temp;
-	temp=event.ctrlKey?this.form.textarea.value:this.text;
+	temp=(event.key=='Control')?this.form.textarea.value:this.text;
+	Console.log(temp);
 	if((this.form.text.value.length==0)||(this.text==null)) _fail.red('Необходимые данные для рассшифровки отсутсвуют!');
 	else {
 		this.form.textarea.value=this.decrypt(this.form.text.value,temp);//this.text
