@@ -62,7 +62,7 @@ event_decode(){//при нажатии по кнопке декодирует с
 	temp=event.ctrlKey?this.form.textarea.value:this.text;
 	if((this.form.text.value.length==0)||(this.text==null)) _fail.red('Необходимые данные для рассшифровки отсутсвуют!');
 	else {
-		this.form.textarea.value=this.decrypt(this.form.text.value,this.text);
+		this.form.textarea.value=this.decrypt(this.form.text.value,temp);//this.text
 		this.input_textarea();
 	};
 },
