@@ -198,7 +198,7 @@ async ajax(url,obj=0){//AJAX модуль
 		body:JSON.stringify(obj),
 		signal
 	}
-	const response=await fetch('https://wild-forest-b24f.xer.workers.dev/'+url,options);
+	const response=await fetch('https://wild-forest-b24f.xer.workers.dev/?'+url,options);
 	if(!response.ok) throw new Error (response.status+' '+response.statusText);
 	const text=await response.text();
 	//if (text.toLowerCase().indexOf("error")!=-1) throw new Error(text); //проверяем проблемы
