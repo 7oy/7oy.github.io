@@ -1,154 +1,145 @@
 "use strict";
 
 let main={
-body:null,
+body:null, //ссылка на тело страницы
 form:null,
-address:'https://script.google.com/macros/s/AKfycbxkCdqx84NGqlYgyYGpGn8UJD_1N-iD-nBo2UqkZDAyzX08iNAYY-9RLDwrK4uHH2U/exec',
-
+address:'https://script.google.com/macros/s/AKfycbxkCdqx84NGqlYgyYGpGn8UJD_1N-iD-nBo2UqkZDAyzX08iNAYY-9RLDwrK4uHH2U/exec', //адрес макроса выдачи/записи данных
 text:null,
 show:null,
 link:null,
 load(){ //инициализация модуля ошибок
-	const self=$.bind_all(main);
-	self.body=$.tag('body');
+	const self=$.bind_all(main); //биндим объект, чтобы в функциях можно было использовать "this"
+	self.body=$.tag('body'); //заносим в объект ссылку на тело ("body") страницы
 
-	if((window.location.search.length==0)||(window.location.search.length<5))$.event('a',self.body,'click',self.click_form_encode);//обработчик для клика на верхней правой части экрана
+	if((window.location.search.length==0)||(window.location.search.length<5))$.event('a',self.body,'click',self.load_encode);/*обработчик для клика на верхней правой части экрана, навешивается для входа на страницу на которой создаем запись*/
 	else if(window.location.search.length>100) _fail.red('Превышен размер переданных данных!');
-	else self.direction_decode(window.location.search);
+	else self.load_decode(window.location.search); //выполняется для входа на страницу на которой получаем и дешифруем запись
 },
-direction_decode(text){//функция получающая сообщение и декодирующее его если есть пароль
-	const find=text.substr(1,4);
-	$.ajax(this.address,{find:find})
+load_decode(text){//функция запроса сообщения и его декодировки
+	const find=text.substring(1,5); //отпиливаем от адресса 4 символа, начиная с 1 ("0" это знак "?"), получаем идентификатор записи в базе 
+	$.ajax(this.address,{find:find}) //отправляем запрос(идентификатор записи) по адрессу базы данных
 	.then(response =>{
-		if('result' in response){
-			this.text=this.form.textarea.value=response.result;
-			this.input_textarea();//чтобы размер подобрался под текст
-			if(text.length>5) this.event_decode();
+		if('result' in response){ //если есть положительный ответ
+			this.text=this.form.textarea.value=response.result; //записываем полученный результат в текстовое поле
+			this.resize_textarea(); //корректируем размер текстового поля под текст
+			if(text.length>5) this.event_decode(); //если к идентификатору записи был присоединен пароль то запускаем расшифровку
 		}
-		else if('error' in response)throw new Error(response.error);
-		this.show_wait(0);
+		else if('error' in response)throw new Error(response.error); //если база данных отправила ошибку
+		this.wait(0);
 		})
-	.catch(error =>{
+	.catch(error =>{ //обработка ошибок произошедших на сервере
 		_fail.red(error);
-		this.show_wait(0);
+		this.wait(0); //убираем экран ожидания
 	});
-	this.layout();//создаем форму
-	this.form.button.innerText='Декодировать';//обзываем кнопку
-	if(text.length>5)this.form.text.value=text.substr(5,text.length);//записываем пароль(если есть) в форму
+	this.layout(); //вставка макета формы
+	this.form.button.innerText='Декодировать'; //обзываем кнопку формы
+	if(text.length>5)this.form.text.value=text.substring(5,text.length);//пишем пароль если он был, в поле пароля
 	$.event(
-			['a',this.form.button,'click',this.event_decode],
-			['a',this.form.text,'keyup',this.event_decode]
+			['a',this.form.button,'click',this.event_decode], //обработчик клика по кнопке декодировать
+			['a',this.form.text,'keyup',this.event_decode] //обработчик отпускания физической кнопки "Enter" в поле ввода пароля
 	);//вешаем обработчик на кнопку для расшифровки
-	this.show_wait(1);
+	this.wait(1); //показываем экран ожидания, снимется асинхронно, когда прийдет ответ от сервера
 },
-click_encode(){
-	if((this.form.text.value.length==0)||(this.form.textarea.value.length==0))_fail.red('Необходимые данные для отправки данных отсутсвуют!');
+event_encode(){ //функция, которая висит на кнопке "кодировать", кодируест и отправляет сообщения на сервер
+	if((this.form.text.value.length==0)||(this.form.textarea.value.length==0))_fail.red('Необходимые данные для отправки данных отсутсвуют!'); //проверка на наличие дынных в текстовом поле и в поле пароля
 	else{
-		const message=this.encrypt(this.form.text.value,this.form.textarea.value);
-		this.show_wait(1);
-		$.ajax(this.address,{set:message})
+		const message=this.encrypt(this.form.text.value,this.form.textarea.value); //кодируем текст
+		this.wait(1); //показываем экран ожидания
+		$.ajax(this.address,{set:message}) //отправка данных на сервер
 		.then(response =>{
-			if('id' in response)this.show_result(response.id);
-			else if('error' in response)throw new Error(response.error);	
+			if('id' in response)this.show_link(response.id); //если в ответе есть "id", то запись выполнена успешно
+			else if('error' in response)throw new Error(response.error); //если в ответе есть "error", то возникли ошибки на стороне сервера
 		})
-		.catch(error =>{
+		.catch(error =>{ //обработка ошибок произошедших на стороне сервера
 			_fail.red(error);
-			this.show_wait(0);
+			this.wait(0); //убираем экран ожидания
 		});
 	};
 },
 event_decode(){//при нажатии по кнопке декодирует сообщение
-	if((event.type=='keyup')&&(event.key!='Enter')) return;
+	if((event.type=='keyup')&&(event.key!='Enter')) return; //если функция вызвана отпусканием кнопки и это не "Enter" то выходим из функции 
 	let temp;
-	temp=(event.ctrlKey)?this.form.textarea.value:this.text;
+	temp=(event.ctrlKey)?this.form.textarea.value:this.text; /*если нажат "Ctrl", то расшифровываем введённый текст, иначе берем раннее полученные данные с сервера(сделанно, чтобы можно было расшифровывать данные не только с сервера)*/
 	if((this.form.text.value.length==0)||(this.text==null)) _fail.red('Необходимые данные для рассшифровки отсутсвуют!');
 	else {
-		this.form.textarea.value=this.decrypt(this.form.text.value,temp);//this.text
-		this.input_textarea();
+		this.form.textarea.value=this.decrypt(this.form.text.value,temp);//this.text, расшифровка зашифрованного текста
+		this.resize_textarea(); //корректируем размер текстового поля под текст
 	};
 },
-click_form_encode(){//обработчик клика для создания формы кодирования
-	const width=$.property(event.target).width;
-	const height=$.property(event.target).height;
-	const x=event.offsetX;
+load_encode(){//обработчик клика для вствавки формы создания записи, срабатывает если кликнуть мышью в верхнем левом углу, также ширина и длина блока страницы должна быть больше 300 
+	const width=$.property(event.target).width; //ширина объекта на котором сработало событие
+	const height=$.property(event.target).height; //длинна объекта на котором сработало событие
+	const x=event.offsetX; //координаты клика мыши от верхнего левого угла объекта на котором сработало событие
 	const y=event.offsetY;
-	if((width>300)&&(height>300)){
-		if((x<300)&&(y<300)){
-			this.form_encode();
-		};
+	if((width>300)&&(height>300)&&(x<300)&&(y<300)){ //проверка на поподание в координаты
+		$.event('r',this.body,'click',this.load_encode); //удаляем обработчик на вставку формы создания записи
+		this.layout(); //вставка макета формы
+		this.form.button.innerText='Кодировать'; //обзываем кнопку формы
+		$.event('a',this.form.button,'click',this.event_encode);//вешаем обработчик на кнопку для кодирования и отправки записи на сервер
 	};
-},
-form_encode(){//форма кодирования
-	$.event('r',this.body,'click',this.click_form_encode);
-	this.layout();
-	this.form.button.innerText='Кодировать';
-	$.event('a',this.form.button,'click',this.click_encode);//вешаем обработчик на кнопку для расшифровки
 },
 layout(){//макет на основе которого создается формы
-	const form=$.box({array:['class','form'],node:this.body,text:`<div class='text'><input type='text' id='text_1' placeholder=' ' data-caret><label for='text_1' data-title='Пароль'></label></div><div class='textarea'><textarea rows='1' placeholder=' ' data-caret></textarea><div data-title='Текст'></div></div><button>Действие</button>`});//контейнер для формы
-	this.form={
-		text:$.css(`input[type='text']`,form),
-		textarea:$.tag('textarea',form),
-		button:$.tag('button',form),
+	const form=$.box({array:['class','form'],node:this.body,text:`<div class='text'><input type='text' id='text_1' placeholder=' ' data-caret><label for='text_1' data-title='Пароль'></label></div><div class='textarea'><textarea rows='1' placeholder=' ' data-caret></textarea><div data-title='Текст'></div></div><button>Действие</button>`});//создаем и вставляем макет в страницу
+	this.form={ //сосздаем ссылки на макет
+		text:$.css(`input[type='text']`,form), //ссылка на поле с паролем
+		textarea:$.tag('textarea',form), //ссылка на текстовое поле
+		button:$.tag('button',form), //ссылка на кнопку
 	}
-	$.event('a',this.form.textarea,'input',this.input_textarea);//вешаем обработчик на textarea для авто. изменения размера
+	$.event('a',this.form.textarea,'input',this.resize_textarea);//вешаем обработчик на textarea для автоматической подстройки размера
 },
-show_wait(i){//показывает/скрывает экран ожидания
-	if(this.show==null)this.show=$.box({array:[['class','fill'],['date-icon','turn']],node:this.body,text:``});//контейнер для заливки
-	if(i==1) this.show.classList.add('show');
-	else if(i==0) this.show.classList.remove('show');
+wait(i){//показывает/скрывает экран ожидания
+	if(this.show==null)this.show=$.box({array:[['class','fill'],['date-icon','turn']],node:this.body,text:``});//вставка контейнера "экран ожидания" в тело страницы
+	const obj=this.show.classList;
+	i==1?obj.add('show'):obj.remove('show'); 
 },
-show_result(link){//выводит ссылку для сообщения
-	let actual=window.location.origin+'?'+link;
-	actual=actual.substr(8,actual.length);
+show_link(link){//выводит ссылку для сообщения
+	let actual=window.location.origin+'?'+link; //присобачиваем идентификатор записи к адресу
+	actual=actual.substring(8,actual.length); //отпиливаем "htpps://" и выводим ссылку 
 /**///const actual='file:///'+window.location.pathname.substr(1,window.location.pathname.length)+'?'+link;//для ДОМА
-	this.show.classList.add('not');
-	this.link=$.box({array:['class','link'],node:this.body,text:actual});//контейнер для заливки
+	this.show.classList.add('not'); //убираем вращающейся элемент, но экран затемнения остается
+	this.link=$.box({array:['class','link'],node:this.body,text:actual}); //вставка контейнера с адресом записи в тело страницы
 },
 ingot(password, length, mark=0){//функция заготовки создает на основе password и length хеш заданной длины, mark учитывает длину маркера окончания строки
 	if(mark) length+=10;
-	let n=Math.ceil((length)/128);
+	let n=Math.ceil((length)/128); //округление до большего целого, расчитываем длину хэш строки
 	let text='';
-	for(let i=1;i<=n;i++){
-		if(i==1)text+=sha512.go(password);
-		else text+=sha512.go(text);
-	};
+	for(let i=1;i<=n;i++) text+=sha512.go(password + text); //расчитываем хэш пароля
 	return text;
 },
-encrypt(password,text){
-	text.normalize();
+encrypt(password,text){ //функция шифровки текста, путем накладывания на него маски
+	text.normalize(); //приводит буквы к нормальномы виду
 	let string_16='';
 	for(let i=0;i<text.length;i++){
-		let sign=text.charCodeAt(i);
+		let sign=text.charCodeAt(i); //возвращает числовой номер символа Юникода по введенному индексу строки
 		if(sign>65535)sign=32;//если больше то забиваем пробелом
-		string_16+=((sign).toString(16)).padStart(4,'0');
+		string_16+=((sign).toString(16)).padStart(4,'0'); /*"padStart" забивает '0' строку спереди, чтобы строка была равна 4, "toString" преобразует десятичное число в 16-е, в строковом отображении*/ 
 	};
 	let mask=this.ingot(password,string_16.length,1);//создаем маску на основе пароля
-	string_16=string_16.padEnd(mask.length,mask);//добиваем текст до длины маски
+	string_16=string_16.padEnd(mask.length,mask);//добиваем текст до длины маски, текст для добивания берется с начала строки маски
 	let string_mask='';
 	for(let i=0;i<mask.length;i++){//накладываем маску на текст
 		string_mask+=(parseInt(mask[i],16)^parseInt(string_16[i],16)).toString(16);
 	};
 	return string_mask;
 },
-decrypt(password,text){
+decrypt(password,text){ //функция дешифровки зашифрованного текста, путем накладывания на него маски
 	let mask=this.ingot(password,text.length);//создаем маску на основе пароля
 	let string='';
 	for(let i=0;i<mask.length;i++){//накладываем маску на текст
 		string+=(parseInt(mask[i],16)^parseInt(text[i],16)).toString(16);
 	};
-	let index=string.indexOf(mask.substr(0,10));
-	if(index==-1) return this.text;
-	string=string.substr(0,index);
+	let index=string.indexOf(mask.substring(0,10)); //ищем фрагмент маски в расшифрованном тексте
+	if(index==-1) return this.text; //если не нашли, значит, текст не расшифрован
+	string=string.substring(0,index); //выпиливаем, фрагмент маски из текста
 	let string_result='';
 	for(let i=0;i<string.length;i+=4){
-		let sign=parseInt(string.substr(i,4),16);
-		string_result+=String.fromCharCode(sign);
+		let sign=parseInt(string.substring(i,i+4),16); //переводим символ текст из 16-й системы счисления в 10-ю
+		string_result+=String.fromCharCode(sign); //заменяем число соответсвующим символом
 	};
 	return string_result;
 },
-input_textarea(){
-	const textarea=this.form.textarea;
+resize_textarea(){ //изменение длины текстового поля, для подстройки под размер его наполнения
+	const textarea=this.form.textarea; //переопределение ссылки для удобства
 	textarea.style.height = 'auto';
 	textarea.style.height = (textarea.scrollHeight) + 'px';
 },
