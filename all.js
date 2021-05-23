@@ -79,9 +79,9 @@ load_encode(){//обработчик клика для вствавки форм
 	};
 },
 layout(){//макет на основе которого создается формы
-	const form=$.box({array:['class','form'],node:this.body,text:`<div class='text'><input type='text' id='text_1' placeholder=' ' data-caret><label for='text_1' data-title='Пароль'></label></div><div class='textarea'><textarea rows='1' placeholder=' ' data-caret></textarea><div data-title='Текст'></div></div><button>Действие</button>`});//создаем и вставляем макет в страницу
+	const form=$.box({array:['class','form'],node:this.body,text:`<div class='text'><input type='password' id='text_1' placeholder=' ' data-caret><label for='text_1' data-title='Пароль'></label></div><div class='textarea'><textarea rows='1' placeholder=' ' data-caret></textarea><div data-title='Текст'></div></div><button>Действие</button>`});//создаем и вставляем макет в страницу
 	this.form={ //сосздаем ссылки на макет
-		text:$.css(`input[type='text']`,form), //ссылка на поле с паролем
+		text:$.css("input[type='password']",form), //ссылка на поле с паролем
 		textarea:$.tag('textarea',form), //ссылка на текстовое поле
 		button:$.tag('button',form), //ссылка на кнопку
 	}
@@ -140,19 +140,20 @@ decrypt(password,text){ //функция дешифровки зашифрова
 },
 resize_textarea(){ //изменение длины текстового поля, для подстройки под размер его наполнения
 	const textarea=this.form.textarea; //переопределение ссылки для удобства
-	textarea.style.height = 'auto';
-	textarea.style.height = (textarea.scrollHeight) + 'px';
+	textarea.style.height = 'auto'; //измеряем полосу прокрутки
+	if(textarea.scrollHeight>=34) textarea.style.height = (textarea.scrollHeight) + 'px'; //если в элементе больше одной строки то увеличиваем размер элемента
+	else textarea.removeAttribute('style'); //иначе удаляем свойство, иначе уплывает нижняя граница(1px <-> 2px)
 },
 };
 
 let $={ //Объект упрощающий жизнь
 id(id){return document.getElementById(id);}, //определение объекта по id
 tag(tag,object){return (object || document).getElementsByTagName(tag)[0];}, //определение объекта по тегу
-css(selector,object){return (object || document).querySelector(selector)},
+css(selector,object){return (object || document).querySelector(selector)}, //поиск по css аргументу внутри тега
 event(...array){//навешивает, удаляет события скопом и поодиночке
 //$.event(['a',self.window,'mouseup',self.stop_move],[])//обработчик для окончания перемещения
 		//передавать (a/r), obj, action, function
-	const a=typeof array[0]==='string'?[array]:array;
+	const a=typeof array[0]==='string'?[array]:array; //проверяем, если передан один элемент в массиве, то дополнительно оборачиваем его в массив, иначе пускаем дальше так
 	a.forEach((x)=>{
 			switch(x[0]){
 				case 'a':x[1].addEventListener(x[2],x[3]);
@@ -163,38 +164,38 @@ event(...array){//навешивает, удаляет события скопо
 			}
 	});
 },
-bind_all(obj){
-	for(var prop in obj) if (typeof obj[prop] == 'function') obj[prop]=obj[prop].bind(obj);
+bind_all(obj){ //привязываем функции к объекту в котором они определены, чтобы можно было использовать "this"
+	for(var method in obj) if (typeof obj[method] == 'function') obj[method]=obj[method].bind(obj);
 	return obj;
 },
 box(obj){//создание и вставка узла
 //передавать {array,node,text}
 	const c=document.createElement('div');
 	if('array' in obj){//если есть массив со значениями атрибутов
-		const a=typeof obj.array[0]==='string'?[obj.array]:obj.array;
+		const a=typeof obj.array[0]==='string'?[obj.array]:obj.array; //проверяем, если передан один элемент в массиве, то дополнительно оборачиваем его в массив, иначе пускаем дальше так
 		a.forEach(x=>c.setAttribute(x[0],x[1]));
 	}
-	if('text' in obj) c.innerHTML=obj.text;
-	if('node' in obj) return obj.node.appendChild(c);
+	if('text' in obj) c.innerHTML=obj.text; //если есть текст, то вставляем его
+	if('node' in obj) return obj.node.appendChild(c); //если передан родительский объект, то вставляем в него созданный
 	else return c; 
 },
 async ajax(url,obj=0){//AJAX модуль
-	const controller=new AbortController();
+	const controller=new AbortController(); //объект который позволяет сбросить запрос
 	const signal=controller.signal;
-	setTimeout(() => controller.abort(), 20000);
-	const options={
+	setTimeout(() => controller.abort(), 20000); //таймер на сброс запроса
+	const options={ //определяем объект с опциями запроса
 		method:'post',
 		headers:{'Content-type':'application/json; charset=utf-8','Accept': 'application/json','X-Requested-With': 'XMLHttpRequest'},
 		cache:'no-cache',
 		body:JSON.stringify(obj),
 		signal
 	}
-	const response=await fetch('https://mighty-lowlands-35866.herokuapp.com/'+url,options);
+	const response=await fetch('https://mighty-lowlands-35866.herokuapp.com/'+url,options); //отправляем запрос
 	//const response=await fetch(url,options);
-	if(!response.ok) throw new Error (response.status+' '+response.statusText);
-	const text=await response.text();
+	if(!response.ok) throw new Error (response.status+' '+response.statusText); //проверка на ошибки
+	const text=await response.text(); //получаем тело ответа
 	//if (text.toLowerCase().indexOf("error")!=-1) throw new Error(text); //проверяем проблемы
-	const data = JSON.parse(text);
+	const data = JSON.parse(text); //парсим тело ответа в объект
 	if(data.alert) throw new Error(data.error); //проверяем есть ли проблемы на стороне сервера
 	return data;
 },
@@ -224,7 +225,7 @@ orange(text){ this.output(text,'orange_report');},//важное сообщен�
 timer(node){ //ставит таймер на удаление сообщения
 	const timer = setInterval(()=> {
 	  if(!node) clearInterval(timer);
-	  else if(!+window.getComputedStyle(this.node).counterReset[6]){//если курсор не наведен то удаляет
+	  else if(!+window.getComputedStyle(this.node).counterReset[6]){//если курсор не наведен то удаляет сообщение; считывает свойство css(counter-reset), которое меняетсят наведения курсора, + превращает символ в число
 		node.remove();  
 		clearInterval(timer);  
 	  }
@@ -244,7 +245,7 @@ delete(){ //удаляет сообщение по клику
 },
 };
 
-let sha512={//(str) 
+let sha512={//go(str) 
 	charsize:8,
 	int64(msint_32, lsint_32){
 		return {highOrder:msint_32,
@@ -382,7 +383,7 @@ let sha512={//(str)
 	},
 	go(str){
 	const int64=this.int64,
-		safe_add_2=this.safe_add_2;//.bind(this);
+		safe_add_2=this.safe_add_2;
 	let H=[int64(0x6a09e667, 0xf3bcc908), int64(0xbb67ae85, 0x84caa73b),
 		int64(0x3c6ef372, 0xfe94f82b), int64(0xa54ff53a, 0x5f1d36f1),
 		int64(0x510e527f, 0xade682d1), int64(0x9b05688c, 0x2b3e6c1f),
@@ -488,17 +489,12 @@ let sha512={//(str)
 };
 
 (()=>{ //функция для автоматического запуска модулей
-/**///$.load();
 	const run=()=>{
 		$.event('r',document,'DOMContentLoaded',run);
 		const date=[
 			_fail.load,
 			sha512.load,
 			main.load,
-			//_authorization.load,
-			//_climate.load,
-			//()=>$.event('a',$.css("[date-icon='key']"),'click',()=>$.import('_gen_pass')),
-			//()=>$.event('a',$.css("[date-icon='compass']"),'click',()=>$.import('_note'))
 			];
 			Promise.all(date.map(Function=>Function()))//промисс параллельного выполнения, метод map проходит по принимаемому массиву и выполняет указанную функцию над каждым элементом 
 			.catch(error =>console.error('load error'));	
