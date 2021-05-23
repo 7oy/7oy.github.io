@@ -101,7 +101,7 @@ width:400px;/*если ширина экрана больше 420 пикселе
 }}
 
 .form{
-margin: 0 auto;
+margin: 0 auto 30px;
 flex-direction:column;
 display:flex;
 justify-content:flex-start;	
