@@ -90,6 +90,15 @@ background:#676767;
 
 /*КОНЕЦ Вывод сообщений о ошибке*/
 
+@media (max-width: 420px) {
+.form {
+width:100%;/*если ширина экрана меньше 420 пикселей*/
+}}
+
+@media (min-width: 420px) {
+.form {
+width:400px;/*если ширина экрана больше 420 пикселей*/
+}}
 
 .form{
 margin: 0 auto;
@@ -97,10 +106,9 @@ flex-direction:column;
 display:flex;
 justify-content:flex-start;	
 align-items:center;
-width:400px;
 position: relative;
 }
- 
+
 /**//*кнопка*/
 .form>button{
 font-size: .875rem;
@@ -121,8 +129,8 @@ border: none;
 outline: none;
 padding: 0 16px 0 16px;
 line-height: inherit;
-box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0,0,0,.12);
-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px, rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px;
+transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1) 0s;
 background-color: #2196f3;
 color: #fff;
 user-select: none;
@@ -132,10 +140,10 @@ vertical-align: middle;
 border-radius: 4px;
 }
 .form>button:hover,.form>button:focus{
-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0,0,0,.12);
+box-shadow: rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px;
 }
 .form>button:active{
-box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0,0,0,.12);
+box-shadow: rgb(0 0 0 / 20%) 0px 5px 5px -3px, rgb(0 0 0 / 14%) 0px 8px 10px 1px, rgb(0 0 0 / 12%) 0px 3px 14px 2px;
 }
 .form>button::before,.form>button::after{
 content: '';
@@ -172,6 +180,7 @@ display: flex;
 flex-direction: column;
 position: relative;
 background-color: rgba(0,0,0,.02);
+min-height: 56px;
 }
 .form>.text{
 height: 56px;	
@@ -198,16 +207,14 @@ border: none;
 background-color: transparent;
 -webkit-appearance: none;
 outline: none;
+caret-color: #2196f3;
 }
 .form>.text>input{
-padding: 20px 16px 6px;	
+padding: 20px 16px 6px;
 }
 .form>.textarea>textarea{
 padding: 0 16px 6px;
 margin-top: 20px;
-}
-
-.form>.textarea>textarea{
 resize: none;
 overflow-y:hidden;
 }
@@ -225,17 +232,22 @@ margin-bottom: 1px;
 color: rgba(0,0,0,.6);
 left: 16px;
 right: initial;
-top: 6px;
+top: 0px;
 pointer-events: none;
 -webkit-font-smoothing: antialiased;
-font-size: 0.75rem;
 font-weight: 400;
-letter-spacing: .009em;
+letter-spacing: .009375em;
 text-decoration: inherit;
 text-transform: inherit;
 position: absolute;
 transform-origin: left top;
+transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),color 150ms cubic-bezier(0.4, 0, 0.2, 1),border-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1);
+/*
+transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),color 150ms cubic-bezier(0.4, 0, 0.2, 1),border-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1);
 transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),color 150ms cubic-bezier(0.4, 0, 0.2, 1),border-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1),font-size 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+*/
+transform: translateY(50%) scale(0.75);
 line-height: 1.15rem;
 text-align: left;
 text-overflow: ellipsis;
@@ -246,7 +258,7 @@ will-change: transform;
 content: attr(data-title);
 }
 .form>.text>input:placeholder-shown:not(:focus) + label::after,.form>.textarea>textarea:placeholder-shown:not(:focus) + div::after{ /*Поведение пояснительной надписи если ничего не написано*/
-transform: translateY(50%);
+transform: translateY(100%);
 color: rgba(0,0,0,.6);
 font-size: 1rem;
 }
