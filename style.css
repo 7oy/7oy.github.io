@@ -14,11 +14,11 @@ align-items: center;
 }
 
 
-/*Вывод сообщений о ошибке*/
-#alarm_info:empty{
+/*Модуль вывода сообщений о ошибке*/
+#alarm_info:empty{ /*если сообщений нет, то контейнер для них не показывается*/
 display: none;
 }
-#alarm_info{
+#alarm_info{ /*контейнер под сообщения*/
 position: fixed;
 top: 10px;
 right: 10px;
@@ -28,7 +28,7 @@ flex-direction: column;
 width:300px;
 z-index: 105;
 }
-#alarm_info>div{
+#alarm_info>div{ /*настройка сообщения о ошибке*/
 position: relative;
 flex-shrink: 0;
 box-sizing: border-box;
@@ -42,17 +42,17 @@ letter-spacing: .0178571429em;
 opacity: .9;
 transition: all 0.4s;
 }
-#alarm_info>div:hover{
+#alarm_info>div:hover{ /*если на сообщении курсор, сообщение не прозрачно*/
 opacity: 1;
 }
-#alarm_info:hover{
+#alarm_info:hover{ /*при выделении элемента курсором, в нём меняется значение переменной, собственно, служит именно для регистрации того, что элемент выделен*/
 counter-reset: count 1;
 }
 #alarm_info:not(:hover){
 counter-reset: count 0;
 }
 
-[class$="report"]>div{
+[class$="report"]>div{ /*крестик закрытия*/
 display: flex;
 position: absolute;
 top: 3px;
@@ -81,7 +81,7 @@ transform: rotate(-45deg);
 background:#676767;
 }
 
-.red_report>div::after,.red_report>div::before{background: #FF5252;}
+.red_report>div::after,.red_report>div::before{background: #FF5252;} /*раскрашиваем сообщения в зависимости от их типа*/
 .green_report>div::after,.green_report>div::before{background: #CCFF90;}
 .orange_report>div::after,.orange_report>div::before{background: #ffa700;}
 .red_report{color: #FF5252;}
@@ -100,7 +100,7 @@ width:100%;/*если ширина экрана меньше 420 пикселе�
 width:400px;/*если ширина экрана больше 420 пикселей*/
 }}
 
-.form{
+.form{ /*настройка основного контейнера страницы*/
 margin: 0 auto 30px;
 flex-direction:column;
 display:flex;
@@ -110,7 +110,7 @@ position: relative;
 }
 
 /**//*кнопка*/
-.form>button{
+.form>button{ /*настройка кнопки*/
 font-size: .875rem;
 text-transform: uppercase;
 margin-top: 30px;
@@ -139,13 +139,13 @@ overflow: hidden;
 vertical-align: middle;
 border-radius: 4px;
 }
-.form>button:hover,.form>button:focus{
+.form>button:hover,.form>button:focus{/*тень под кнопкой, когда кнопка под курсором или выделена*/
 box-shadow: rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px;
 }
-.form>button:active{
+.form>button:active{/*тень под кнопкой, когда кнопка нажимается*/
 box-shadow: rgb(0 0 0 / 20%) 0px 5px 5px -3px, rgb(0 0 0 / 14%) 0px 8px 10px 1px, rgb(0 0 0 / 12%) 0px 3px 14px 2px;
 }
-.form>button::before,.form>button::after{
+.form>button::before,.form>button::after{ /*настройка анимации затемнения поверхности кнопки*/
 content: '';
 display: block;
 width: 120%;
@@ -153,17 +153,17 @@ height: 120%;
 position: absolute;
 top:0;
 }
-.form>button:hover::before{
+.form>button:hover::before{/*затемнение кнопки, когда кнопка под курсором*/
 background: rgba(255, 255, 255, 0.08);
 }
-.form>button:focus::before{
+.form>button:focus::before{/*затемнение кнопки, когда кнопка выделена*/
 background: rgba(255, 255, 255, 0.24);
 }
-.form>button::after{
+.form>button::after{/*настройка анимации следа нажатия кнопки*/
 background: rgba(255, 255, 255, 0) 50%;
 background-size: 100%;
 }
-.form>button:active::after{
+.form>button:active::after{/*анимация нажатия кнопки, по поверхности проходит расширяющееся круглая волна*/
 background: radial-gradient(circle, rgba(255, 255, 255, 0.24) 10%, rgba(0, 0, 0, 0) 1%) 50% no-repeat;
 background-size: 1000%;
 transition: all 0.15s ease-in;
@@ -171,7 +171,7 @@ transition: all 0.15s ease-in;
 /*\*//*кнопка*/
 
 /**//*пароль*/
-.form>.text,.form>.textarea{
+.form>.text,.form>.textarea{/*настройка контейнера содержащего текстовые поля*/
 box-sizing: border-box;
 width: 100%;
 margin-top: 30px;
@@ -185,14 +185,14 @@ min-height: 56px;
 .form>.text{
 height: 56px;	
 }
-.form>.text:hover,.form>.textarea:hover{
+.form>.text:hover,.form>.textarea:hover{/*элемент под курсором, затемняется контейнер текстового поля*/
 background-color: rgba(0,0,0,.06);
 }
-.form>.text:focus-within,.form>.textarea:focus-within{
+.form>.text:focus-within,.form>.textarea:focus-within{/*если элемент или его родитель под фокусом, то затемняется контейнер текстового поля*/
 background-color: rgba(0,0,0,.14);
 }
 
-.form>.text>input,.form>.textarea>textarea{
+.form>.text>input,.form>.textarea>textarea{/*настройка текстовых полей*/
 font-size: 1rem;
 line-height: 1.50rem;
 font-weight: 400;
@@ -219,16 +219,15 @@ resize: none;
 overflow-y:hidden;
 }
 
-
-.form>.text>input:focus + label,.form>.textarea>textarea:focus + div{ /*Поведение при фокусе*/
+.form>.text>input:focus + label,.form>.textarea>textarea:focus + div{ /*меняет цвет нижней границы поля и увеличивает на 1px, когда поле ввода находится под фокусом*/
 border-bottom: 2px solid #2196f3;
 margin-bottom: 0;
 }
-.form>.text>label,.form>.textarea>div{
+.form>.text>label,.form>.textarea>div{/*рисуем нижнюю границу поля ввода*/
 border-bottom: 1px solid rgba(0,0,0,.42);
 margin-bottom: 1px;
 }
-.form>.text>label::after,.form>.textarea>div::after{
+.form>.text>label::after,.form>.textarea>div::after{/*текст заполняющий текстовой поле, когда в нём ничего не написано*/
 color: rgba(0,0,0,.6);
 left: 16px;
 right: initial;
@@ -242,11 +241,6 @@ text-transform: inherit;
 position: absolute;
 transform-origin: left top;
 transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),color 150ms cubic-bezier(0.4, 0, 0.2, 1),border-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1);
-/*
-transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),color 150ms cubic-bezier(0.4, 0, 0.2, 1),border-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1);
-transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),color 150ms cubic-bezier(0.4, 0, 0.2, 1),border-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1),font-size 150ms cubic-bezier(0.4, 0, 0.2, 1);
-
-*/
 transform: translateY(50%) scale(0.75);
 line-height: 1.15rem;
 text-align: left;
@@ -257,17 +251,17 @@ overflow: hidden;
 will-change: transform;
 content: attr(data-title);
 }
-.form>.text>input:placeholder-shown:not(:focus) + label::after,.form>.textarea>textarea:placeholder-shown:not(:focus) + div::after{ /*Поведение пояснительной надписи если ничего не написано*/
-transform: translateY(100%);
+.form>.text>input:placeholder-shown:not(:focus) + label::after,.form>.textarea>textarea:placeholder-shown:not(:focus) + div::after{ /*Поведение пояснительной надписи, если в поле ничего не написано и нет фокуса на текстовом поле, надпись находится по середине текстового поля*/
+transform: translateY(105%);
 color: rgba(0,0,0,.6);
 font-size: 1rem;
 }
-.form>.text>input:focus + label::after,.form>.textarea>textarea:focus + div::after{ /*Поведение пояснительной надписи при фокусе*/
+.form>.text>input:focus + label::after,.form>.textarea>textarea:focus + div::after{ /*пояснительная надпись при фокусе меняет цвет*/
 color: #2196f3;
 }
 /**//*пароль*/
 
-.fill{
+.fill{/*заполняет тело страницы серым фоном*/
 top: 0;
 left: 0;
 bottom: 0;
@@ -281,7 +275,7 @@ display: none;
 justify-content: center;
 align-items: center;
 }
-.fill[date-icon='turn']:not(.not)::after{
+.fill[date-icon='turn']:not(.not)::after{/*вращающейся элемент показывающий, что идёт загрузка, "not" - чтобы можно было показать ".link" на сером фоне без индикатора загрузки*/
 display: block;
 height: 100px;
 width: 100px;
@@ -290,23 +284,25 @@ animation: rotation_count 1200ms infinite linear;
 content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.904 16h-3.795v-.328c-.173-7.094-5.958-12.794-13.07-12.794C6.815 2.878.961 8.753.961 16s5.854 13.118 13.078 13.118c3.037 0 5.832-1.04 8.053-2.781l-2.25-2.406a9.757 9.757 0 0 1-5.803 1.909c-5.418 0-9.81-4.406-9.81-9.84s4.392-9.84 9.81-9.84c5.307 0 9.629 4.229 9.8 9.512V16h-4.275l5.59 6.23 5.75-6.23z"/></svg>');
 }
 
-.show.fill{
+.show.fill{/*если на элементе два этих стиля, то элемент отображается*/
 display: flex;
 }
 
-@keyframes rotation_count{
+@keyframes rotation_count{/*настройка анимации вращения стрелки загрузки*/
 0% {transform: rotate(0deg);}	
 100% {transform: rotate(360deg);}	
 }
 
-.link{
+.link{/*контейнер с ссылкой на заметку, показывается на фоне определённом для индикатора загрузки*/
 border-radius: 4px;
 display: block;
+top: 40vh;
+position: fixed;
+text-align: center;
 font-size: 1.25rem;
 line-height: 2rem;
 font-weight: 500;
 letter-spacing: .0125em;
-position: absolute;
 color: black;
 background-color: white;
 box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
