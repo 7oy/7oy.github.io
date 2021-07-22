@@ -108,7 +108,7 @@ ingot(password,length){ //функция заготовки создает на 
 	let permutation=(hash,password)=>{ //функция для создания одного перестановочного шаблона из хэш значения
 		let template=''; //перестановочный шаблон
 		while(!(template.length==16)){ //цикл будет продолжаться пока размер шаблона не станет равным 16
-			hash=$.sha_3(password+hash); //вычисляем хэш на основе шаблона и предыдущего использованного хэша
+			hash=this.sha_3(password+hash); //вычисляем хэш на основе шаблона и предыдущего использованного хэша
 			for(let i=0;i<hash.length;i++)if(!template.includes(hash[i]))template+=hash[i]; //проходим по длине хэша,вставляем в шаблон уникальные символы из хэша
 			//hash.split('').forEach(e=>!template.includes(e)&&template+=e);
 		};
@@ -123,9 +123,9 @@ ingot(password,length){ //функция заготовки создает на 
 		mask_2='', //вторая маска
 		mask_3='', //маска, полученная смещением второй маски
 		mask=''; //суммирование масок
-	for(let i=0;i<length;i++)mask_1+=$.sha_3(i==0?password+hash:password+mask_1); //рассчитываем первую маску
-	for(let i=0;i<7;i++)hash=$.sha_3(password+hash); //перелистнем хэши
-	for(let i=0;i<length;i++)mask_2+=$.sha_3(i==0?password+hash:password+mask_2); //рассчитываем вторую маску
+	for(let i=0;i<length;i++)mask_1+=this.sha_3(i==0?password+hash:password+mask_1); //рассчитываем первую маску
+	for(let i=0;i<7;i++)hash=this.sha_3(password+hash); //перелистнем хэши
+	for(let i=0;i<length;i++)mask_2+=this.sha_3(i==0?password+hash:password+mask_2); //рассчитываем вторую маску
 	mask_3=mask_2.slice(-2)+mask_2.slice(0,-2); //преобразовываем вторую маску	
 	for(let i=0;i<mask_1.length;i++)mask+=(parseInt(mask_1[i],16)^parseInt(mask_3[i],16)).toString(16);//суммируем маски
 	return [array, mask, mask_1];
@@ -134,7 +134,7 @@ encrypt(password,text){ //функция шифровки текста, путе
 	text.normalize(); //приводит буквы к нормальному виду
 	let string_16=Array.from(new TextEncoder().encode(text),x=>x.toString(16).padStart(2,'0')).join(''); //строка индексов символов текста
 	let n=Math.ceil((string_16.length+10)/128); //округление до большего целого, рассчитываем длину хэш строки
-	let val=$.ingot(password,n);//получим маски на основе пароля
+	let val=this.ingot(password,n);//получим маски на основе пароля
 	let array=val[0], //массив перестановочных шаблонов
 		mask_1=val[2], //первая маска
 		mask=val[1]; //результирующая маска
@@ -147,7 +147,7 @@ encrypt(password,text){ //функция шифровки текста, путе
 },
 decrypt(password,text){ //функция дешифровки зашифрованного текста, путем накладывания на него маски
 	let n=Math.ceil((text.length)/128); //округление до большего целого, рассчитываем длину хэш строки
-	let val=$.ingot(password,n);//получим маски на основе пароля
+	let val=this.ingot(password,n);//получим маски на основе пароля
 	let array=val[0]; //массив перестановочных шаблонов
 	let mask_1=val[2]; //первая маска
 	let mask=val[1]; //результирующая маска
