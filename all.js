@@ -164,7 +164,7 @@ decrypt(password,text){ //функция дешифровки зашифрова
 		stage_2+=(parseInt(mask[i],16)^parseInt(stage_1[i],16)).toString(16);
 	};
 	let index=stage_2.indexOf(mask_1.substring(0,10)); //ищем фрагмент маски в расшифрованном тексте
-	if(index==-1)return null; //если не нашли, значит, текст не расшифрован
+	if(index==-1)return this.text;; //если не нашли, значит, текст не расшифрован
 	stage_2=stage_2.substring(0,index); //выпиливаем, фрагмент маски из текста
 	let result=new TextDecoder().decode(new Uint8Array(stage_2.match(/.{2}/g).map(x=>parseInt(x, 16))));
 	return result;
