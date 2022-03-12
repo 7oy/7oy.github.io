@@ -3,7 +3,7 @@
 let main={
 body:null, //ссылка на тело страницы
 form:null,
-address:'https://script.google.com/macros/s/AKfycbxkCdqx84NGqlYgyYGpGn8UJD_1N-iD-nBo2UqkZDAyzX08iNAYY-9RLDwrK4uHH2U/exec', //адрес макроса выдачи/записи данных
+address:'https://script.google.com/macros/s/AKfycbyq-zVq4JyIK0sXLV2hil82smssD61Cy3EeFVUUV1DxwUg2wyeIjSnjXXiQ0kYlVII/exec', //адрес макроса выдачи/записи данных
 text:null,
 show:null,
 link:null,
