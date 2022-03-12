@@ -8,7 +8,8 @@ text:null,
 show:null,
 link:null,
 load(){ //инициализация модуля ошибок
-	const self=$.bind_all(main); //биндим объект, чтобы в функциях можно было использовать "this"
+	$.bind_all(main); //биндим объект, чтобы в функциях можно было использовать "this"
+	const self=main;
 	self.body=$.tag('body'); //заносим в объект ссылку на тело ("body") страницы
 	if((window.location.search.length==0)||(window.location.search.length<5))$.event('a',self.body,'click',self.load_encode);/*обработчик для клика на верхней правой части экрана, навешивается для входа на страницу на которой создаем запись*/
 	else if(window.location.search.length>100) _fail.red('Превышен размер переданных данных!');
@@ -70,8 +71,8 @@ load_encode(){//обработчик клика для вставки формы
 	const height=$.property(event.target).height; //длинна объекта на котором сработало событие
 	const x=event.offsetX; //координаты клика мыши от верхнего левого угла объекта на котором сработало событие
 	const y=event.offsetY;
-	console.log(event.target);
-	console.table([width,height,x,y]);
+	//console.log(event.target);
+	//console.table([width,height,x,y]);
 	if((width>300)&&(height>300)&&(x<300)&&(y<300)){ //проверка на попадание в координаты
 		$.event('r',this.body,'click',this.load_encode); //удаляем обработчик на вставку формы создания записи
 		this.layout(); //вставка макета формы
@@ -164,7 +165,11 @@ decrypt(password,text){ //функция дешифровки зашифрова
 		stage_2+=(parseInt(mask[i],16)^parseInt(stage_1[i],16)).toString(16);
 	};
 	let index=stage_2.indexOf(mask_1.substring(0,10)); //ищем фрагмент маски в расшифрованном тексте
-	if(index==-1)return this.text;; //если не нашли, значит, текст не расшифрован
+	if(index==-1){
+		$.css('label').classList.add('g');//вешаем класс "g" на объект
+		setTimeout(()=>{$.css('label').classList.remove('g');},500);//ставим таймер на последующее удаление класса "g" с объекта
+		return this.text; //если не нашли, значит, текст не расшифрован
+	}
 	stage_2=stage_2.substring(0,index); //выпиливаем, фрагмент маски из текста
 	let result=new TextDecoder().decode(new Uint8Array(stage_2.match(/.{2}/g).map(x=>parseInt(x, 16))));
 	return result;
@@ -267,10 +272,7 @@ event(...array){//навешивает, удаляет события скопо
 			}
 	});
 },
-bind_all(obj){ //привязываем функции к объекту, в котором они определены, чтобы можно было использовать "this"
-	for(var method in obj)if(typeof obj[method]=='function')obj[method]=obj[method].bind(obj);
-	return obj;
-},
+bind_all(obj){for(let method in obj)if(typeof obj[method]=='function')obj[method]=obj[method].bind(obj);},//задает функциям ссылку на родительский объект
 box(obj){//создание и вставка узла
 //передавать {array,node,text}
 	const c=document.createElement('div');
@@ -288,13 +290,11 @@ async ajax(url,obj=0){//AJAX модуль
 	setTimeout(()=>controller.abort(),20000); //таймер на сброс запроса
 	const options={ //определяем объект с опциями запроса
 		method:'post',
-		//headers:{'Content-type':'application/json; charset=utf-8','Accept': 'application/json','X-Requested-With': 'XMLHttpRequest'},
 		headers:{"Content-Type":"text/plain;charset=utf-8"},
 		cache:'no-cache',
 		body:JSON.stringify(obj),
 		signal
 	}
-	//const response=await fetch('https://mighty-lowlands-35866.herokuapp.com/'+url,options); //отправляем запрос
 	const response=await fetch(url,options);
 	if(!response.ok) throw new Error (response.status+' '+response.statusText); //проверка на ошибки
 	const text=await response.text(); //получаем тело ответа
@@ -319,7 +319,8 @@ property(node){ //получает свойства элемента
 let _fail={//Модуль ошибок
 node:null,
 load(){ //инициализация модуля ошибок
-	const self=$.bind_all(_fail);
+	$.bind_all(_fail);
+	const self=_fail;
 	self.node=$.id('alarm_info');
 	$.event('a',self.node,'click',self.delete);
 },
