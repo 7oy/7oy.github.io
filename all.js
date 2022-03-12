@@ -288,13 +288,14 @@ async ajax(url,obj=0){//AJAX модуль
 	setTimeout(()=>controller.abort(),20000); //таймер на сброс запроса
 	const options={ //определяем объект с опциями запроса
 		method:'post',
-		headers:{'Content-type':'application/json; charset=utf-8','Accept': 'application/json','X-Requested-With': 'XMLHttpRequest'},
+		//headers:{'Content-type':'application/json; charset=utf-8','Accept': 'application/json','X-Requested-With': 'XMLHttpRequest'},
+		headers:{"Content-Type":"text/plain;charset=utf-8"},
 		cache:'no-cache',
 		body:JSON.stringify(obj),
 		signal
 	}
-	const response=await fetch('https://mighty-lowlands-35866.herokuapp.com/'+url,options); //отправляем запрос
-	//const response=await fetch(url,options);
+	//const response=await fetch('https://mighty-lowlands-35866.herokuapp.com/'+url,options); //отправляем запрос
+	const response=await fetch(url,options);
 	if(!response.ok) throw new Error (response.status+' '+response.statusText); //проверка на ошибки
 	const text=await response.text(); //получаем тело ответа
 	//if (text.toLowerCase().indexOf("error")!=-1) throw new Error(text); //проверяем проблемы
