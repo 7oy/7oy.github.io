@@ -39,7 +39,7 @@ window_decode(text){//функция запроса сообщения и его
 },
 event_encode(){//функция, которая висит на кнопке "кодировать", кодирует и отправляет сообщения на сервер
 	let password=this.a[0].value,
-		text=this.a[1].innerText;
+		text=this.a[1].innerText.replace(/\u00A0/g,"");
 	if((password.length==0)||(text.length==0))fail.red("Необходимые данные для отправки данных отсутствуют!");//проверка на наличие дынных в текстовом поле и в поле пароля
 	else{
 		let message=this.encrypt(password,text);//кодируем текст
