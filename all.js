@@ -83,7 +83,7 @@ protect_encode(){//обработчик клика для вставки фор�
 	};
 },
 layout(){//макет на основе которого создается формы
-	let b="<input type='password'placeholder='Пароль' t><t i='Текст'contentEditable='plaintext-only' t></t><k c>";//поле для ввода пароля и кнопка
+	let b="<input type='password'placeholder='Пароль' t><t i='Текст'contentEditable='plaintext-only'spellcheck='false' t></t><k c>";//поле для ввода пароля и кнопка
 	this.body.innerHTML=b;
 	this.a=this.body.querySelectorAll("*");//создаём ссылки на элементы
 	//0: input - ссылка на поле с паролем
