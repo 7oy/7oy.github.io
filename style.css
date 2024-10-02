@@ -10,7 +10,7 @@
 --g:#CCFF90;/*зелёный для сообщений о ошибках*/
 --o:#ffa700;/*оранжевый для сообщений о ошибках*/
 }
-body *,body,[r]{
+body *,body,.r{
 font:1rem Verdana,sans-serif;
 box-sizing:border-box;
 }
@@ -45,7 +45,13 @@ flex-direction:column-reverse;
 width:300px;
 z-index:9;
 }
-[r]{/*сообщение о ошибке(идентификатор для всех типов сообщений)*/
+alarm:hover{/*при выделении элемента курсором, в нём меняется значение переменной, собственно, служит именно для регистрации того, что элемент выделен*/
+order:1;
+}
+alarm:not(:hover){
+order:0;
+}
+.r{/*сообщение о ошибке(идентификатор для всех типов сообщений)*/
 position:relative;
 margin:0 0 14px;
 padding:14px 24px;
@@ -56,14 +62,8 @@ letter-spacing:.0178571429em;
 opacity:.9;
 transition:opacity 0.4s;
 }
-[r]:hover{/*если на сообщении курсор, сообщение не прозрачно*/
+.r:hover{/*если на сообщении курсор, сообщение не прозрачно*/
 opacity:1;
-}
-alarm:hover{/*при выделении элемента курсором, в нём меняется значение переменной, собственно, служит именно для регистрации того, что элемент выделен*/
-order:1;
-}
-alarm:not(:hover){
-order:0;
 }
 x{/*крестик закрытия сообщения об ошибке*/
 position:absolute;
@@ -85,33 +85,44 @@ position:absolute;
 top:20%;
 left:45%;
 }
-red>x::after,red>x::before{background:var(--r2);} /*раскрашиваем сообщения в зависимости от их типа*/
-green>x::after,green>x::before{background:var(--g);}
-orange>x::after,orange>x::before{background:var(--o);}
-red{color:var(--r2);}
-green{color:var(--g);}
-orange{color:var(--o);}
+alarm>.r{/*раскрашиваем сообщения в зависимости от их типа*/
+--c:var(--r2);
+	&.green{
+		--c:var(--g);
+	}
+	&.orange{
+		--c:var(--o);
+}}
+x::after,x::before{
+background:var(--c);
+content:"";
+}
+.r{
+color:var(--c);
+}
 /*КОНЕЦ Вывод сообщений о ошибке*/
 
 /*Индикация загрузки*/
-#s{/*закрывает блоком всё тело страницы, серым фоном*/
+.s{/*закрывает блоком всё тело страницы, серым фоном*/
 position:fixed;
 width:100%;
-background-color:rgba(var(--G),.75);
+height:100%;
+background:rgba(var(--G),.75);
 z-index:1;
 }
-#s::before{/*полупрозрачный фон линии/индикатора загрузки*/
+.s::before{/*полупрозрачный фон линии/индикатора загрузки*/
 width:100%;
-background-color:rgba(var(--P),.4);
+background:rgba(var(--P),.4);
 }
-#s::after{/*движущийся элемент загрузки*/
+.s::after{/*движущийся элемент загрузки*/
 width:60%;
-background-color:var(--p);
+background:var(--p);
 position:absolute;
 left:-60%;
 animation:bar 2s ease-in 0.5s infinite;
 }
-#s::after,#s::before{
+.s::after,.s::before{
+content:"";
 position:fixed;
 top:0px;
 height:4px;
@@ -121,8 +132,6 @@ height:4px;
 to{transform:translateX(400%)}
 }
 /*КОНЕЦ, Индикация загрузки*/
-
-
 
 k,t:empty{
 display:flex;
@@ -136,9 +145,9 @@ height:40px;
 margin:8px 6px;
 padding:0 24px;
 border-radius:20px;
-background-color:var(--p);
+background:var(--p);
 color:white;
--webkit-tap-highlight-color:var(--t);
+cursor:pointer;
 transition:box-shadow 280ms cubic-bezier(.4,0,.2,1);
 }
 k:hover:not(:active){
@@ -148,7 +157,7 @@ k:hover::after{
 opacity:12%;
 }
 k::after{
-background-color:white;
+background:white;
 opacity:0;
 transition:opacity .4s;
 }
@@ -164,39 +173,27 @@ transition:background-size 0.15s ease-in;
 k::after,k::before{
 position:absolute;
 width:100%;
-border-radius:20px;
-}
-k::after,#s,k::before{
 height:100%;
-}
-[c]::after,[c]::before{
+border-radius:20px;
 content:"";
 }
-k{
-cursor:pointer;
-}
-input{/*поле для ввода пароля*/
+
+.t{
 width:fit-content;
-padding:0 16px;
-text-align:center;
-}
-t,input{
 outline:none;
 height:48px;
 margin:8px 0;
 border-radius:4px;
 caret-color:var(--p);
-border:1px solid rgba(var(--B),.38);
+--h:rgba(var(--B),.38);
+border:1px solid var(--h);
 transition:border-color .4s;
 }
-[t]:hover{/*общий идентификатор для текстовых полей*/
-border-color:rgba(var(--B),.87);
-}
-[t]:focus{
-border:2px solid var(--p);
+input{/*поле для ввода пароля*/
+padding:0 16px;
+text-align:center;
 }
 t{/*текстовое поле*/
-width:fit-content;
 padding:14px 16px;
 line-height:1.4rem;
 word-spacing:5px;
@@ -209,12 +206,19 @@ content:attr(i);
 color:rgba(var(--B),.5);
 z-index:-1;
 }
-#r{/*при ошибочном пароле раскрашивает кромку поля ввода пароля в красный цвет*/
-border-color:var(--r);
+.t:hover{/*общий идентификатор для текстовых полей*/
+--h:rgba(var(--B),.87);
+}
+.t:focus{
+--h:var(--p);
+border-width:2px;
+}
+.t.e{/*при ошибочном пароле раскрашивает кромку поля ввода пароля в красный цвет*/
+--h:var(--r);
 }
 input,k{/*приподнимает текст в поле,(выравнивает по середине)*/
 padding-bottom:1px;
 }
-#link{/*применяется на body при выводе кнопки с ссылкой*/
+.link{/*применяется на body при выводе кнопки с ссылкой*/
 padding-top:100px;
 }
