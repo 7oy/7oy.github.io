@@ -339,7 +339,7 @@ red(text){console.error(text);this.timer(this.paste(text,"red"));},//ошибк�
 green(text){console.info(text);this.timer(this.paste(text,"green"));},//информационное сообщение
 orange(text){console.warn(text);this.paste(text,"orange");},//важное сообщение
 timer(node){//ставит таймер на удаление сообщения
-	let timer=setInterval(()=>{
+	let timer=setInterval(_=>{
 		if(!node)clearInterval(timer);
 		else if(!+window.getComputedStyle(this.alarm).order){
 /*
@@ -363,8 +363,8 @@ paste(text,color){
 }
 };
 
-(()=>{//функция для автоматического запуска модулей
-	let run=()=>{
+(_=>{//функция для автоматического запуска модулей
+	let run=_=>{
 		$.event(0,document,"DOMContentLoaded",run);
 		let date=[
 			$.load,
